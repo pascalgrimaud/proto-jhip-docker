@@ -35,6 +35,10 @@ RUN npm install -g yo bower grunt-cli gulp
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/cache/oracle-jdk${JAVA_VERSION}-installer
 
+# install JHipster
+COPY . /home/jhipster/generator-jhipster
+RUN npm install -g /home/jhipster/generator-jhipster/
+
 # configure the "jhipster" user
 RUN groupadd jhipster && useradd jhipster -s /bin/bash -m -g jhipster -G jhipster && adduser jhipster sudo
 RUN echo 'jhipster:jhipster' |chpasswd
@@ -42,12 +46,8 @@ RUN mkdir -p /home/jhipster/app
 RUN cd /home && chown -R jhipster:jhipster /home/jhipster
 RUN chown -R jhipster:jhipster /usr/lib/node_modules/
 
-# install JHipster
-USER jhipster
-COPY . /home/jhipster/generator-jhipster
-RUN npm install -g /home/jhipster/generator-jhipster/
-
 # expose the working directory, the Tomcat port, the BrowserSync ports
+USER jhipster
 WORKDIR "/home/jhipster/app"
 VOLUME ["/home/jhipster/app"]
 EXPOSE 8080 3000 3001
